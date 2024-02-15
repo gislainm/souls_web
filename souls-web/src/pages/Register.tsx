@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import AuthContext from "../context/AuthProvider";
 import {
   Box,
   Button,
@@ -10,19 +11,24 @@ import {
   Link,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { PasswordField } from "../components/PasswordField";
 import { InputField } from "../components/InputField";
 import Logo from "../images/Logo.png";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { RiOrganizationChart } from "react-icons/ri";
 import { FaPhone } from "react-icons/fa6";
 import axios from "../api/axios";
+import { TUser } from "../Types/user";
+
 const REGISTER_URL: string = "/register";
+const ORGANIZATION_URL: string = "/organization/add";
 
 const Register: React.FC = () => {
+  const { setAuth } = useContext(AuthContext);
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
@@ -33,6 +39,8 @@ const Register: React.FC = () => {
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   let timeoutId: any;
+  const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -46,7 +54,7 @@ const Register: React.FC = () => {
       validEmail &&
       validPhone &&
       password &&
-      password.length >= 8 &&
+      password.length >= 6 &&
       password === confPassowrd &&
       organization
     ) {
@@ -70,7 +78,7 @@ const Register: React.FC = () => {
     }, 2000);
 
     try {
-      const response = await axios.post(
+      const responseUser = await axios.post(
         REGISTER_URL,
         JSON.stringify({
           name: `${firstname} ${lastname}`,
@@ -80,24 +88,71 @@ const Register: React.FC = () => {
         }),
         {
           headers: { "Content-Type": "application/json" },
-          //   withCredentials: true,
+          withCredentials: true,
         }
       );
-      console.log(JSON.stringify(response));
+      const userAuth: TUser = responseUser.data;
+      const responseOrganization = await axios.post(
+        ORGANIZATION_URL,
+        JSON.stringify({
+          name: organization,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userAuth.access}`,
+          },
+          withCredentials: true,
+        }
+      );
+      userAuth.organization = responseOrganization.data!.organization;
+      setAuth(userAuth);
+      setFirstname("");
+      setLastname("");
+      setEmail("");
+      setPhone("");
+      setOrganization("");
+      setPassword("");
+      setConfPassword("");
+      navigate("/groups");
+      console.log(
+        JSON.stringify(responseUser),
+        JSON.stringify(responseOrganization)
+      );
     } catch (err: any) {
       if (!err!.response) {
+        toast({
+          title: err.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
         console.log(err!.message);
       } else if (err!.response!.data!.error!.email) {
-        const message = err!.response!.data!.error!.email[0].split(" ");
-        message.shift();
-        const response = message.join(" ");
-        console.log(response);
+        const message = err!.response!.data!.error!.email[0];
+        const error_message =
+          message === "custom user with this email already exists."
+            ? "User already registered. Login instead"
+            : message;
+        toast({
+          title: error_message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        console.log(err.response.data);
       } else {
+        toast({
+          title: err!.response!.data!.error,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
         console.log(err!.response!.data!.error);
       }
     }
 
-    console.log("form submitted");
+    console.log("register form submitted");
     console.log(firstname, lastname, email, phone, password, organization);
   };
 

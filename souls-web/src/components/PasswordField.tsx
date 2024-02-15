@@ -36,16 +36,16 @@ export const PasswordField = ({
   const checkInputOnBlur = () => {
     if (
       (title === "Password" && value === "") ||
-      (title === "Password" && value.length < 8)
+      (title === "Password" && value.length < 6)
     ) {
       setInputError(true);
-      setErrorMessage(`Password must be 8 characters or more`);
+      setErrorMessage(`Password must be 6 characters or more`);
     } else if (title === "Confirm Password" && value !== prevValue) {
       setInputError(true);
       setErrorMessage(`Password doesn't match`);
-    } else if (title === "Confirm Password" && value.length < 8) {
+    } else if (title === "Confirm Password" && value.length < 6) {
       setInputError(true);
-      setErrorMessage(`Password must be 8 characters or more`);
+      setErrorMessage(`Password must be 6 characters or more`);
     } else {
       setInputError(false);
       setErrorMessage("");
@@ -82,6 +82,7 @@ export const PasswordField = ({
           type={isOpen ? "text" : "password"}
           autoComplete="current-password"
           focusBorderColor="eden.50"
+          value={value}
           onChange={handleInputChange}
           onFocus={onFocusController}
           onBlur={checkInputOnBlur}

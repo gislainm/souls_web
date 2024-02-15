@@ -4,6 +4,9 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Authorization from "./pages/Authorization";
+import Groups from "./pages/Groups";
+import RequireAuth from "./components/RequireAuth";
+import Dashboard from "./pages/Dashboard";
 
 const App: React.FC = () => {
   return (
@@ -14,30 +17,14 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/authorize" element={<Authorization />} />
+          <Route element={<RequireAuth />}>
+            <Route path="/groups" element={<Groups />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
         </Routes>
       </Router>
     </>
-    // <>
-    //   {/* <Login /> */}
-    // </>
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.tsx</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
   );
-  /* "@babel/plugin-proposal-private-property-in-objects":""*/
 };
 
 export default App;

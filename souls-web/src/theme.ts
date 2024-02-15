@@ -1,6 +1,7 @@
 import { extendTheme } from "@chakra-ui/react";
 import { CustomButton as Button } from "./styles/CustomButton";
 import { CustomLink as Link } from "./styles/CustomLink";
+import { tableTheme } from "./styles/CustomTable";
 const theme = extendTheme({
   useCustomProperties: true,
   fonts: {
@@ -38,9 +39,13 @@ const theme = extendTheme({
       100: "#008C95",
     },
     browner: "#574846",
+    table: {
+      100: "#8aaaaa",
+      200: "#447676",
+    },
     slate: {
       50: "#2ACBC8",
-      70:"#23A9A7",
+      70: "#23A9A7",
       100: "#115453",
       200: "#OA3332",
     },
@@ -48,6 +53,7 @@ const theme = extendTheme({
   components: {
     Button,
     Link,
+    Table: tableTheme,
   },
 });
 export default theme;

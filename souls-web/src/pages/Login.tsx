@@ -10,26 +10,37 @@ import {
   Link,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { PasswordField } from "../components/PasswordField";
 import { InputField } from "../components/InputField";
-// import { ReactComponent as MySVG } from "../Logo.svg";
 import Logo from "../images/Logo.png";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
+import axios from "../api/axios";
+import { TUser } from "../Types/user";
+import useAuth from "../hooks/useAuth";
+import { AxiosResponse } from "axios";
 
-const Login:React.FC  = () => {
+const LOGIN_URL: string = "/login";
+
+const Login: React.FC = () => {
+  const { setAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   let timeoutId: any;
+  const toast = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location?.state?.from?.pathname || "/groups";
 
   useEffect(() => {
     let pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     let validEmail = pattern.test(email);
 
-    if (validEmail && password && password.length >= 8) {
+    if (validEmail && password && password.length >= 6) {
       setButtonDisabled(false);
     } else {
       setButtonDisabled(true);
@@ -41,13 +52,50 @@ const Login:React.FC  = () => {
       clearTimeout(timeoutId);
     };
     // eslint-disable-next-line
-  },[]);
+  }, []);
 
-  const loginController = () => {
+  const loginController = async () => {
     setLoading(true);
     timeoutId = setTimeout(() => {
       setLoading(false);
     }, 2000);
+
+    try {
+      const response:AxiosResponse = await axios.post(
+        LOGIN_URL,
+        JSON.stringify({ email, password }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      setEmail("");
+      setPassword("");
+      const userAuth: TUser = response.data;
+      setAuth(userAuth);
+      navigate(from, { replace: true });
+      console.log(JSON.stringify(response));
+    } catch (err: any) {
+      if (!err!.response) {
+        toast({
+          title: err.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        console.log(err!.message);
+      } else if (err!.response!.data) {
+        toast({
+          title: err!.response!.data!.detail,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        console.log(err!.response!.data!.detail);
+      }
+    }
+
+    console.log("login form submitted");
     console.log(email, password);
   };
 
