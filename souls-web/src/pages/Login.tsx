@@ -25,7 +25,7 @@ import { AxiosResponse } from "axios";
 const LOGIN_URL: string = "/login";
 
 const Login: React.FC = () => {
-  const { setAuth } = useAuth();
+  const { setAuth, persist, setPersist } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -48,11 +48,22 @@ const Login: React.FC = () => {
   }, [email, password]);
 
   useEffect(() => {
+    const initialPersist = localStorage.getItem("persist");
+    if (initialPersist) {
+      setPersist(JSON.parse(initialPersist));
+    }
     return () => {
       clearTimeout(timeoutId);
     };
     // eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    localStorage.setItem("persist", JSON.stringify(persist));
+  }, [persist]);
+
+  const togglePersist = () => {
+    setPersist((prev) => !prev);
+  };
 
   const loginController = async () => {
     setLoading(true);
@@ -61,7 +72,7 @@ const Login: React.FC = () => {
     }, 2000);
 
     try {
-      const response:AxiosResponse = await axios.post(
+      const response: AxiosResponse = await axios.post(
         LOGIN_URL,
         JSON.stringify({ email, password }),
         {
@@ -74,7 +85,6 @@ const Login: React.FC = () => {
       const userAuth: TUser = response.data;
       setAuth(userAuth);
       navigate(from, { replace: true });
-      console.log(JSON.stringify(response));
     } catch (err: any) {
       if (!err!.response) {
         toast({
@@ -83,7 +93,6 @@ const Login: React.FC = () => {
           duration: 9000,
           isClosable: true,
         });
-        console.log(err!.message);
       } else if (err!.response!.data) {
         toast({
           title: err!.response!.data!.detail,
@@ -91,12 +100,8 @@ const Login: React.FC = () => {
           duration: 9000,
           isClosable: true,
         });
-        console.log(err!.response!.data!.detail);
       }
     }
-
-    console.log("login form submitted");
-    console.log(email, password);
   };
 
   return (
@@ -153,12 +158,17 @@ const Login: React.FC = () => {
                 />
               </Stack>
               <HStack justify="space-between">
-                <Checkbox colorScheme="teal" borderColor="eden.100">
+                <Checkbox
+                  colorScheme="teal"
+                  borderColor="eden.100"
+                  isChecked={persist}
+                  onChange={togglePersist}
+                >
                   Remember me
                 </Checkbox>
-                <Link variant="primary" size="sm">
+                {/* <Link variant="primary" size="sm">
                   Forgot password?
-                </Link>
+                </Link> */}
               </HStack>
               <Stack spacing="6">
                 <Button

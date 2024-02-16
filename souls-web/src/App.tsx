@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Authorization from "./pages/Authorization";
 import Groups from "./pages/Groups";
 import RequireAuth from "./components/RequireAuth";
+import PersistentLogin from "./components/PesistentLogin";
 import Dashboard from "./pages/Dashboard";
 
 const App: React.FC = () => {
@@ -17,10 +18,15 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/authorize" element={<Authorization />} />
-          <Route element={<RequireAuth />}>
-            <Route path="/groups" element={<Groups />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+          {/* Protected routes */}
+          <Route element={<PersistentLogin />}>
+            <Route element={<RequireAuth />}>
+              <Route path="/groups" element={<Groups />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
           </Route>
+          {/* Catch all route that takes you home everytime you try to access any url that doesn't exist */}
+          <Route path="*" element={<Home />} />
         </Routes>
       </Router>
     </>

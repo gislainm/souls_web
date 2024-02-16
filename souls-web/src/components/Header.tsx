@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-import { Link as RouterLink, NavLink, useLocation } from "react-router-dom";
+import {
+  Link as RouterLink,
+  NavLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import {
   Link,
   Button,
@@ -12,6 +17,8 @@ import {
   MenuDivider,
   MenuGroup,
   useBreakpointValue,
+  Box,
+  useToast,
 } from "@chakra-ui/react";
 import { IoMenu } from "react-icons/io5";
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -20,11 +27,15 @@ import { FaSignOutAlt } from "react-icons/fa";
 import { BiChevronDown } from "react-icons/bi";
 import LogoCircle from "../images/logo-circle.png";
 import useAuth from "../hooks/useAuth";
+import UseLogout from "../hooks/useLogout";
 
 function Header() {
   const [top, setTop] = useState(true);
   const { auth } = useAuth();
   const location = useLocation();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const logout = UseLogout();
   const profileButtonContent = useBreakpointValue({
     base: (
       <MenuButton
@@ -44,7 +55,7 @@ function Header() {
         size={{ base: "sm", md: "md" }}
         _expanded={{ bg: "eden.100" }}
       >
-        {auth!.organization.name}
+        {auth && auth!.organization.name}
       </MenuButton>
     ),
   });
@@ -58,6 +69,28 @@ function Header() {
     return () => window.removeEventListener("scroll", scrollHandler);
   }, [top]);
 
+  const handleLogout = async () => {
+    try {
+      const response = await logout();
+      toast({
+        title: response.data.message,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
+      navigate("/login");
+    } catch (error: any) {
+      toast({
+        title: error.response ? error.response.data.error : error.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  };
+
   return (
     <header
       className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${
@@ -69,14 +102,26 @@ function Header() {
           {/* Site branding */}
           <div className="flex-shrink-0 mr-4">
             {/* Logo */}
-            <Link as={RouterLink} to="/" className="block" aria-label="Cruip">
-              <Image
-                borderRadius="full"
-                boxSize="40px"
-                src={LogoCircle}
-                alt="header-logo"
-              />
-            </Link>
+            {!auth && (
+              <Link as={RouterLink} to="/" className="block" aria-label="Cruip">
+                <Image
+                  borderRadius="full"
+                  boxSize="40px"
+                  src={LogoCircle}
+                  alt="header-logo"
+                />
+              </Link>
+            )}
+            {auth && (
+              <Box className="block" aria-label="Cruip">
+                <Image
+                  borderRadius="full"
+                  boxSize="40px"
+                  src={LogoCircle}
+                  alt="header-logo"
+                />
+              </Box>
+            )}
           </div>
 
           {/* Site navigation */}
@@ -171,7 +216,7 @@ function Header() {
                           bg="#E0E0E0"
                           _hover={{ bg: "sirocco", color: "background" }}
                           icon={<FaSignOutAlt />}
-                          onClick={() => alert("signed out")}
+                          onClick={handleLogout}
                         >
                           Sign out
                         </MenuItem>

@@ -115,10 +115,10 @@ const Register: React.FC = () => {
       setPassword("");
       setConfPassword("");
       navigate("/groups");
-      console.log(
-        JSON.stringify(responseUser),
-        JSON.stringify(responseOrganization)
-      );
+      // console.log(
+      //   JSON.stringify(responseUser),
+      //   JSON.stringify(responseOrganization)
+      // );
     } catch (err: any) {
       if (!err!.response) {
         toast({
@@ -127,7 +127,6 @@ const Register: React.FC = () => {
           duration: 9000,
           isClosable: true,
         });
-        console.log(err!.message);
       } else if (err!.response!.data!.error!.email) {
         const message = err!.response!.data!.error!.email[0];
         const error_message =
@@ -140,7 +139,6 @@ const Register: React.FC = () => {
           duration: 9000,
           isClosable: true,
         });
-        console.log(err.response.data);
       } else {
         toast({
           title: err!.response!.data!.error,
@@ -148,12 +146,8 @@ const Register: React.FC = () => {
           duration: 9000,
           isClosable: true,
         });
-        console.log(err!.response!.data!.error);
       }
     }
-
-    console.log("register form submitted");
-    console.log(firstname, lastname, email, phone, password, organization);
   };
 
   return (
@@ -197,7 +191,7 @@ const Register: React.FC = () => {
                   title="Firstname"
                   type="text"
                   OptionIcon={FaUser}
-                  id="firstname"
+                  id="given-name"
                   value={firstname}
                   setValue={setFirstname}
                   isRequired={true}
@@ -206,7 +200,7 @@ const Register: React.FC = () => {
                   title="Lastname"
                   type="text"
                   OptionIcon={FaUser}
-                  id="lastname"
+                  id="family-name"
                   value={lastname}
                   setValue={setLastname}
                   isRequired={true}

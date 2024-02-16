@@ -90,6 +90,7 @@ export const InputField = ({
           id={id}
           type={type}
           value={value}
+          autoComplete={id}
           onChange={handleInputChange}
           onFocus={eraseError}
           onBlur={checkInputOnBlur}
