@@ -83,7 +83,7 @@ function Groups() {
     // eslint-disable-next-line
   }, []);
   return (
-    <Container maxW="6xl">
+    <Container maxW="8xl">
       {groups.length > 0 && (
         <TableContainer
           className="mt-32 pt-6 pb-12 mx-auto px-4 sm:px-6"
@@ -97,11 +97,11 @@ function Groups() {
             </TableCaption>
             <Thead>
               <Tr>
-                <Th>Name</Th>
-                <Th>Leader</Th>
-                <Th>Meet Day</Th>
-                <Th>Meet Time</Th>
-                <Th>Edit Group</Th>
+                <Th fontSize={12}>Name</Th>
+                <Th fontSize={12}>Leader</Th>
+                <Th fontSize={12}>Meet Day</Th>
+                <Th fontSize={12}>Meet Time</Th>
+                <Th fontSize={12}>Edit Group</Th>
               </Tr>
             </Thead>
             <Tbody>

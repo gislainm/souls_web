@@ -25,3 +25,25 @@ export interface Tleader {
   is_group_leader: boolean;
   is_deleted: boolean;
 }
+
+export interface TLeaderUser {
+  access: string;
+  user: Tleader;
+  organization: {
+    id: string;
+    name: string;
+    admin: string;
+  };
+  groups: group[];
+}
+
+export interface TAttending {
+  id: string;
+  name: string;
+  is_deleted: boolean;
+}
+
+interface group {
+  id: string;
+  name: string;
+}

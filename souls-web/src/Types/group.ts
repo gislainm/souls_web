@@ -17,7 +17,7 @@ export interface TGroup {
   is_deleted: boolean;
 }
 export interface TGroupWeekly {
-  week: string;
+  week: number;
   dates: string;
   total_attendend_members:number;
 }

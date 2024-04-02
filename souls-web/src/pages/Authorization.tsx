@@ -5,22 +5,38 @@ import {
   Container,
   Heading,
   Image,
-//   Link,
+  Checkbox,
+  Link,
   Stack,
-//   Text,
+  HStack,
+  Text,
+  useToast,
 } from "@chakra-ui/react";
 import { InputField } from "../components/InputField";
 import Logo from "../images/Logo.png";
-// import { Link as RouterLink } from "react-router-dom";
+import axios from "../api/axios";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { TbLockAccess } from "react-icons/tb";
+import { AxiosResponse } from "axios";
+import { TLeaderUser } from "../Types/user";
+import useAuthL from "../hooks/useAuthLeader";
+
+const AUTH_URL: string = "/oauth/verify/dfc661d3-b4a4-4efd-98fe-88b2685617fe";
 
 const Authorization: React.FC = () => {
+  const { setAuth, persist, setPersist } = useAuthL();
+  const toast = useToast();
   const [accessCode, setAccessCode] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   let timeoutId: any;
 
   useEffect(() => {
+    const initialPersist = localStorage.getItem("persist");
+    if (initialPersist) {
+      setPersist(JSON.parse(initialPersist));
+    }
     return () => {
       clearTimeout(timeoutId);
     };
@@ -32,16 +48,54 @@ const Authorization: React.FC = () => {
     const validCode = pattern.test(accessCode);
     if (validCode) {
       setButtonDisabled(false);
-    }else{
-        setButtonDisabled(true);
+    } else {
+      setButtonDisabled(true);
     }
   }, [accessCode]);
+  useEffect(() => {
+    localStorage.setItem("persist", JSON.stringify(persist));
+  }, [persist]);
 
-  const verifyController = () => {
+  const togglePersist = () => {
+    setPersist((prev) => !prev);
+  };
+
+  const verifyController = async () => {
     setLoading(true);
     timeoutId = setTimeout(() => {
       setLoading(false);
     }, 2000);
+
+    try {
+      const response: AxiosResponse = await axios.post(
+        AUTH_URL,
+        JSON.stringify({ code: accessCode }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      const userAuth: TLeaderUser = response.data;
+      const nextPage: string = `/${userAuth.organization.id}/groups`;
+      setAuth(userAuth);
+      navigate(nextPage, { replace: true });
+    } catch (err: any) {
+      if (!err!.response) {
+        toast({
+          title: err.message,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      } else if (err!.response!.data) {
+        toast({
+          title: err!.response!.data!.error,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    }
   };
 
   return (
@@ -62,6 +116,12 @@ const Authorization: React.FC = () => {
             >
               Verify Your Access Code
             </Heading>
+            <Text color="fg.muted">
+              Request{" "}
+              <Link as={RouterLink} to="/login" variant="primary" size="sm">
+                Access Code
+              </Link>
+            </Text>
           </Stack>
         </Stack>
         <Box
@@ -84,6 +144,16 @@ const Authorization: React.FC = () => {
                   isRequired={true}
                 />
               </Stack>
+              <HStack justify="space-between">
+                <Checkbox
+                  colorScheme="teal"
+                  borderColor="eden.100"
+                  isChecked={persist}
+                  onChange={togglePersist}
+                >
+                  Remember me
+                </Checkbox>
+              </HStack>
               <Stack spacing="6">
                 <Button
                   variant="primary"

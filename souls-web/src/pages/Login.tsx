@@ -166,9 +166,6 @@ const Login: React.FC = () => {
                 >
                   Remember me
                 </Checkbox>
-                {/* <Link variant="primary" size="sm">
-                  Forgot password?
-                </Link> */}
               </HStack>
               <Stack spacing="6">
                 <Button

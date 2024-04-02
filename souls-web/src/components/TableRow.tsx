@@ -5,11 +5,11 @@ import { TGroup } from "../Types/group";
 const TableRow = ({ group }: { group: TGroup }) => {
   return (
     <Tr>
-      <Td>{group.name}</Td>
-      <Td>{group.leader.name}</Td>
-      <Td>{group.meet_day}</Td>
-      <Td>{group.meet_time}</Td>
-      <Td>
+      <Td fontSize={14}>{group.name}</Td>
+      <Td fontSize={14}>{group.leader.name}</Td>
+      <Td fontSize={14}>{group.meet_day}</Td>
+      <Td fontSize={14}>{group.meet_time}</Td>
+      <Td fontSize={14}>
         <Button
           variant="ghost"
           as="span"
