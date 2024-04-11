@@ -21,7 +21,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/authorize" element={<Authorization />} />
+          <Route path="/authorize/:uuid" element={<Authorization />} />
           {/* Protected routes Group Leader */}
           <Route element={<PersistentLoginLeader />}>
             <Route element={<RequireAuthLeader />}>

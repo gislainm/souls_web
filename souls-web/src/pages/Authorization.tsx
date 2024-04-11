@@ -15,13 +15,11 @@ import {
 import { InputField } from "../components/InputField";
 import Logo from "../images/Logo.png";
 import axios from "../api/axios";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { TbLockAccess } from "react-icons/tb";
 import { AxiosResponse } from "axios";
 import { TLeaderUser } from "../Types/user";
 import useAuthL from "../hooks/useAuthLeader";
-
-const AUTH_URL: string = "/oauth/verify/dfc661d3-b4a4-4efd-98fe-88b2685617fe";
 
 const Authorization: React.FC = () => {
   const { setAuth, persist, setPersist } = useAuthL();
@@ -30,6 +28,8 @@ const Authorization: React.FC = () => {
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { uuid } = useParams();
+  const AUTH_URL: string = `/oauth/verify/${uuid}`;
   let timeoutId: any;
 
   useEffect(() => {
