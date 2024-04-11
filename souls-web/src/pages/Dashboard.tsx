@@ -91,7 +91,7 @@ function Dashboard() {
                     </Th>
                   );
                 })}
-                <Th color="#008C95" fontSize={12}>
+                <Th color="#008C95" isNumeric fontSize={12}>
                   Total
                 </Th>
               </Tr>
